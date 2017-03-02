@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exports>
+	 <file id="com.i360r.bpm.service.rs.task.api.SearchMyCurrentTaskListResponse"
+		name="我的任务查询列表" >
+		<sheet name="我的任务" rows="processes">
+			<column name="流程编号">processInstanceId</column>
+			<column name="类别">processDefinitionName</column>
+			<column name="关键字">keyword</column>
+			<column name="状态">statusName</column>
+			<column name="当前步骤">currentTaskName</column>
+			<column name="当前处理人">currentAssignee</column>
+			<column name="创建人">createdByName</column>
+			<column name="创建时间">createTime</column>
+			<column name="完成时间">endTime</column>
+		</sheet>
+	</file>
+	
+	<file id="com.i360r.bpm.service.rs.task.api.SearchCurrentTaskListResponse"
+		name="审核中的任务列表" >
+		<sheet name="审核中的任务" rows="processes">
+			<column name="流程编号">processInstanceId</column>
+			<column name="类别">processDefinitionName</column>
+			<column name="关键字">keyword</column>
+			<column name="任务状态">statusName</column>
+			<column name="当前步骤">currentTaskName</column>
+			<column name="当前处理人">currentAssignee</column>
+			<column name="创建人">createdByName</column>
+			<column name="创建时间">createTime</column>
+			<column name="完成时间">endTime</column>
+		</sheet>
+	</file>
+	
+	<file id="com.i360r.bpm.service.rs.task.api.SearchHistoryTaskListResponse"
+		name="归档任务列表" >
+		<sheet name="归档任务" rows="processes">
+			<column name="流程编号">processInstanceId</column>
+			<column name="类别">processDefinitionName</column>
+			<column name="关键字">keyword</column>
+			<column name="任务状态">statusName</column>
+			<column name="当前步骤">currentTaskName</column>
+			<column name="当前处理人">currentAssignee</column>
+			<column name="创建人">createdByName</column>
+			<column name="创建时间">createTime</column>
+			<column name="完成时间">endTime</column>
+		</sheet>
+	</file>
+	
+</exports>

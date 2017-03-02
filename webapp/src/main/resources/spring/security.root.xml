@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:hz="http://www.hazelcast.com/schema/spring"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.hazelcast.com/schema/spring 
+		http://www.hazelcast.com/schema/spring/hazelcast-spring-3.3.xsd
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	
+	<security:filter-security-metadata-source id="securityMetadataSource" 
+		use-expressions="true">
+		<security:intercept-url pattern="/security/**"
+			access="permitAll" />
+		<security:intercept-url pattern="/services/**"
+			access="permitAll" />
+		<security:intercept-url pattern="/StateMonitorServlet" access="permitAll" />
+		<security:intercept-url pattern="/**"
+			access="isAuthenticated()" />
+	</security:filter-security-metadata-source>
+	
+</beans>

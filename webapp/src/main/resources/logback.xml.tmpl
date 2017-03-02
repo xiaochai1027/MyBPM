@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+	<appender name="CentralizedAppender" class="com.i360r.framework.log.logback.appender.CentralizedAppender">
+		<enabled>@LOG_SERVER_ENABLED@</enabled>
+		<remoteHost>@LOG_SERVER_IP@</remoteHost>
+		<port>@LOG_SERVER_PORT@</port>
+		<clientName>@SERVER_NAME@</clientName>
+		<reconnectionDelay>10 seconds</reconnectionDelay>
+		<queueSize>512</queueSize>
+		<eventDelayLimit>100 milliseconds</eventDelayLimit>
+	</appender>
+	
+	<appender name="FileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>@LOG_DIR@/bpm.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+	      <fileNamePattern>@LOG_DIR@/bpm.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+	       <maxFileSize>10MB</maxFileSize>    
+	       <maxHistory>10</maxHistory>
+	       <totalSizeCap>250MB</totalSizeCap>
+	    </rollingPolicy>
+
+		<encoder>
+		  <pattern>%d [%t] %p %c - %m%n</pattern>
+		  <charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	
+	<appender name="AsyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>512</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="FileAppender"/>
+	</appender>
+	
+	<appender name="AsyncCentralizedAppender" class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>512</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="CentralizedAppender"/>
+	</appender>
+	
+	<logger name="org.springframework" additivity="true" >
+		<level value="INFO" />
+	</logger>
+  	
+  	<logger name="org.quartz" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+  	<logger name="org.mybatis" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="org.apache.ibatis" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="org.apache.cxf" additivity="true" >
+		<level value="WARN" />
+	</logger>
+	
+  	<logger name="java.sql" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="com.mchange" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+  	<logger name="com.i360r.bpm" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="com.hazelcast" additivity="true" >
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="org.apache.cxf.jaxrs.utils.JAXRSUtils" additivity="true" >
+		<level value="ERROR" />
+	</logger>
+	
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="AsyncFileAppender" />
+		<appender-ref ref="AsyncCentralizedAppender" />
+	</root>
+
+</configuration>

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	http://activemq.apache.org/schema/core 
+	http://activemq.apache.org/schema/core/activemq-core.xsd
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<!-- base -->
+	<util:list id="resourceBundles">
+		<value>classpath:/locale/label</value>
+		<value>classpath:/locale/message</value>
+		<value>classpath:/locale/enum</value>
+	</util:list>
+	
+	<!-- service -->
+	<util:list id="statusCodes">
+		<value>classpath:/code/error</value>
+	</util:list>
+	
+	<bean 
+		id="abstractHttpClient" 
+		class="com.i360r.framework.http.client.AbstractHttpClient" 
+		abstract="true" init-method="init">
+		
+		<property name="mock">
+			<value>${http.client.mock:true}</value>
+		</property>
+		
+		<property name="maxConnection">
+			<value>${http.client.max.connection:150}</value>
+		</property>
+		
+		<property name="connectionTimeout">
+			<value>${http.client.connection.timeout:10000}</value>
+		</property>
+		
+		<property name="socketTimeout">
+			<value>${http.client.socket.timeout:10000}</value>
+		</property>
+	</bean>	
+	
+	<bean id="processEngineConfiguration" class="com.i360r.bpm.engine.SyncDeploySpringProcessEngineConfiguration">
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="databaseSchemaUpdate" value="true" />
+		<property name="jobExecutorActivate" value="true" />
+		<property name="dbIdentityUsed" value="false" />
+		
+		<property name="customSessionFactories">  
+            <list>  
+               <bean class="com.i360r.bpm.data.dao.impl.identity.CustomGroupEntityManagerFactory" />
+               <bean class="com.i360r.bpm.data.dao.impl.identity.CustomUserEntityManagerFactory" />
+               <bean class="com.i360r.bpm.data.dao.impl.history.CustomHistoryManagerSessionFactory" />               
+            </list>  
+     	</property>
+     	
+     	<property name="eventListeners">
+	      <list>
+			<bean class="com.i360r.bpm.engine.TaskAssignedEventListener"/>
+			<bean class="com.i360r.bpm.engine.TaskCreatedEventListener"/>
+	      </list>
+	    </property>
+     	
+     	<property name="deploymentResources" value="classpath*:/bpmn/**/*.bpmn" />
+		<property name="deploymentMode" value="single-resource" />
+	</bean>
+
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+
+	<bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+	<bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+	<bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService" />
+	<bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+
+	<bean id="deploymentLock" class="com.i360r.bpm.engine.DeploymentLock" parent="abstractHazelcast"/>
+
+	<bean id="abstractEngineHandler" class="com.i360r.bpm.engine.AbstractEngineHandler" abstract="true"/>
+	
+	<bean id="abstractBusinessHandler" class="com.i360r.bpm.business.handler.AbstractBusinessHandler" abstract="true"/>
+	
+	<bean id="deliveryStaffHandler" class="com.i360r.bpm.business.handler.deliverystaff.DeliveryStaffHandler" parent="abstractBusinessHandler"/>
+	
+	<bean id="employeeHandler" class="com.i360r.bpm.business.handler.employee.EmployeeHandler" parent="abstractBusinessHandler"/>
+
+	<bean id="attendanceHandler" class="com.i360r.bpm.business.handler.attendance.AttendanceHandler" parent="abstractBusinessHandler"/>
+
+	<bean id="messageNotifyHandler" class="com.i360r.bpm.business.handler.message.MessageNotifyHandler" parent="abstractEngineHandler"/>
+	
+	<bean id="fixedAssetHandler" class="com.i360r.bpm.business.handler.fixedasset.FixedAssetHandler" parent="abstractEngineHandler"/>
+	
+	<bean id="salaryHandler" class="com.i360r.bpm.business.handler.employee.salary.SalaryHandler" parent="abstractBusinessHandler"/>
+
+	<!-- 站长handler -->
+	
+	<bean id="stationManagerHandler" 
+		class="com.i360r.bpm.business.handler.delivery.stationmanager.entry.StationManagerHandler" parent="abstractEngineHandler"/>
+	
+	<bean id="stationManagerEntryResultHandler" 
+		class="com.i360r.bpm.business.handler.delivery.stationmanager.entry.result.StationManagerEntryResultHandler" parent="abstractEngineHandler"/>
+	
+	<bean id="deliveryStaffEntryResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffEntryResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="deliveryStaffDimissionResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffDimissionResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="deliveryStaffLeaveResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffLeaveResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="deliveryStaffWorkOvertimeResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffWorkOvertimeResultHandler" parent="abstractEngineHandler"/>
+		
+	<bean id="deliveryStaffCancelLeaveResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffCancelLeaveResultHandler" parent="abstractEngineHandler"/>
+	
+	<bean id="deliveryStaffGradeResultHandler" 
+		class="com.i360r.bpm.business.handler.deliverystaff.result.DeliveryStaffGradeResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="deliveryStaffAttendanceResultHandler"
+		  class="com.i360r.bpm.business.handler.attendance.result.AttendanceRawDataResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="storeAccountResultHandler"
+		  class="com.i360r.bpm.business.handler.store.account.result.StoreAccountResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="storeResultHandler"
+		  class="com.i360r.bpm.business.handler.store.account.result.StoreResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="vendorResultHandler"
+		  class="com.i360r.bpm.business.handler.store.account.result.VendorResultHandler" parent="abstractEngineHandler"/>
+		  
+	<bean id="VendorBillApplyResultHandler"
+		  class="com.i360r.bpm.business.handler.vendor.bill.result.VendorBillApplyResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetBusinessAreaTransferOutResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetBusinessAreaTransferOutResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetCityDistributeResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetCityDistributeResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetCityDistributeUncheckedResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetCityDistributeUncheckedResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetCityTransferOutResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetCityTransferOutResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetNationalDistributeResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetNationalDistributeResultHandler" parent="abstractEngineHandler"/>
+
+	<bean id="fixedAssetScrapResultHandler" 
+		class="com.i360r.bpm.business.handler.fixedasset.result.FixedAssetScrapResultHandler" parent="abstractEngineHandler"/>
+	
+ 	<bean id="citySalaryResultHandler" 
+		class="com.i360r.bpm.business.handler.employee.city.salary.result.CitySalaryResultHandler" parent="abstractEngineHandler"/>
+ 	
+ 	<bean id="globalSalaryResultHandler" 
+		class="com.i360r.bpm.business.handler.employee.global.salary.result.GlobalSalaryResultHandler" parent="abstractEngineHandler"/>
+ 	
+	<bean id="employeeTopicListener" class="com.i360r.bpm.webapp.service.jms.topic.employee.EmployeeTopicListener" />
+	<bean id="resultManager" class="com.i360r.bpm.business.handler.process.ProcessResultHandlerManager" parent="abstractEngineHandler"/>
+
+	<bean id="processHandler" class="com.i360r.bpm.business.handler.process.ProcessHandler"/>
+		
+	<bean id="processValidatorManager" class="com.i360r.bpm.service.rs.process.validator.ProcessValidatorManager"/>
+	
+	<bean id="processUniqueVariableValidator" class="com.i360r.bpm.service.rs.process.validator.impl.ProcessUniqueVariableValidator" parent="abstractEngineHandler"/>
+	
+	<bean id="processCreatorUniqueTimeRangeValidator" class="com.i360r.bpm.service.rs.process.validator.impl.ProcessCreatorUniqueTimeRangeValidator" parent="abstractEngineHandler"/>
+	
+	<bean id="businessAreaFundHandler" class="com.i360r.bpm.business.handler.businessarea.fund.BusinessAreaFundHandler" parent="abstractBusinessHandler"/>
+	
+	<bean id="activitiToRemoteExceptionMapper" class="com.i360r.bpm.business.exception.mapper.ActivitiToRemoteExceptionMapper"/>
+	
+	<bean id="abstractBusinessAreaFundResultHandler" class="com.i360r.bpm.business.handler.businessarea.fund.result.AbstractBusinessAreaFundResultHandler" parent="abstractEngineHandler" abstract="true"/>
+	
+	<bean id="spendBeforeReimburseResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.SpendBeforeReimburseResultHandler" parent="abstractBusinessAreaFundResultHandler"/>
+	
+	<bean id="cityReimburseResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.CityReimburseResultHandler" parent="abstractBusinessAreaFundResultHandler"/>
+		
+	<bean id="spendAfterReimburseResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.SpendAfterReimburseResultHandler" parent="abstractBusinessAreaFundResultHandler"/>
+		
+	<bean id="revenueApplyResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.RevenueApplyResultHandler" parent="abstractBusinessAreaFundResultHandler"/>
+		
+	<bean id="reservedCashRefundResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.ReservedCashRefundResultHandler" parent="abstractBusinessAreaFundResultHandler"/>
+		
+	<bean id="reservedCashApplyResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.ReservedCashApplyResultHandler" parent="abstractBusinessAreaFundResultHandler"/>		
+	
+	<bean id="loanRefundResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.LoanRefundResultHandler" parent="abstractBusinessAreaFundResultHandler"/>				
+		
+	<bean id="loanApplyResultHandler" 
+		class="com.i360r.bpm.business.handler.businessarea.fund.result.LoanApplyResultHandler" parent="abstractBusinessAreaFundResultHandler"/>				
+	
+	<bean id="housingContractHandler" class="com.i360r.bpm.business.handler.housing.contract.HousingContractHandler"/>
+	
+	<bean id="housingContractCheckinResultHandler" class="com.i360r.bpm.business.handler.housing.contract.result.HousingContractCheckinResultHandler"/>
+		
+	<bean id="housingContractReletResultHandler" class="com.i360r.bpm.business.handler.housing.contract.result.HousingContractReletResultHandler"/>
+	
+	<bean id="housingCheckoutHandler" class="com.i360r.bpm.business.handler.housing.checkout.HousingCheckoutHandler"/>
+	<bean id="housingCheckoutResultHandler" class="com.i360r.bpm.business.handler.housing.checkout.result.HousingCheckoutResultHandler"/>
+	
+	<bean id="housingReimburseHandler" class="com.i360r.bpm.business.handler.housingreimburse.HousingReimburseHandler"/>
+	<bean id="housingRentReimburseResultHandler" class="com.i360r.bpm.business.handler.housingreimburse.result.HousingRentReimburseResultHandler"/>
+	<bean id="housingFeeReimburseResultHandler" class="com.i360r.bpm.business.handler.housingreimburse.result.HousingFeeReimburseResultHandler"/>
+	
+	<bean id="innerAnnouncementHandler" 
+		class="com.i360r.bpm.business.handler.inner.announcement.InnerAnnouncementHandler" parent="abstractBusinessHandler"/>	
+	<bean id="innerMessageResultHandler" 
+		class="com.i360r.bpm.business.handler.inner.announcement.result.InnerAnnouncementResultHandler" parent="abstractEngineHandler"/>	
+	<bean id="storeAccountWithdrawResultHandler" class="com.i360r.bpm.business.handler.store.account.withdraw.result.StoreAccountWithdrawResultHandler"/>
+
+	<bean id="storeAccountHandler" class="com.i360r.bpm.business.handler.store.account.StoreAccountHandler" parent="abstractBusinessHandler"/>
+	
+	<bean id="vendorBillHandler" class="com.i360r.bpm.business.handler.vendor.VendorBillHandler" parent="abstractBusinessHandler"/>
+	
+	
+	<!-- cron job/quartz for Contract-->
+	<bean id="abstractStatefulJobTask" abstract="true" class="com.i360r.framework.scheduler.AbstractStatefulJobTask" >
+    	<property name="jobTaskExecutionNotifications" >
+    		<list>  
+				<ref bean="jobTaskExecutionStatusHandler" />  
+				<ref bean="jobTaskFailureHandler" />  
+			</list>  
+		</property>
+    </bean>  
+    
+	<bean id="endProcessJobTask" class="com.i360r.bpm.scheduler.EndProcessJobTask" parent="abstractStatefulJobTask"/>
+    
+    <bean 
+        id="endProcessTrigger" 
+        class="org.springframework.scheduling.quartz.CronTriggerBean">
+        
+        <property name="jobDetail" ref="endProcessJobTask" />
+        
+        <property name="cronExpression" value="0 0 3 1 * ?" />
+    </bean>
+    
+    <bean id="processCheckAlertJobTask" class="com.i360r.bpm.scheduler.ProcessCheckAlertJobTask" parent="abstractStatefulJobTask"/>
+    
+     <bean 
+        id="entryProcessCheckAlertTrigger" 
+        class="org.springframework.scheduling.quartz.CronTriggerBean">
+        
+        <property name="jobDetail" ref="processCheckAlertJobTask" />
+        
+         <!-- Execute at 08:00 everyday -->
+         <property name="cronExpression" value="0 0 8 * * ?" />
+         <!-- <property name="cronExpression" value="0 */2 * * * ?" /> --> 
+        
+    </bean>
+    
+    <bean id="processCheckNoticeJobTask" class="com.i360r.bpm.scheduler.ProcessCheckNoticeJobTask" parent="abstractStatefulJobTask"/>
+    
+    <bean
+    	id="entryprocessCheckNoticeTrigger"
+    	class="org.springframework.scheduling.quartz.CronTriggerBean">
+
+	<property name="jobDetail" ref="processCheckNoticeJobTask" />
+	 <!-- Execute at 08:30 everyday -->
+	<property name="cronExpression" value="0 30 8 * * ?" />
+	    	
+    </bean>
+    
+    <bean id="processCheckFinishJobTask" class="com.i360r.bpm.scheduler.ProcessCheckFinishJobTask" parent="abstractStatefulJobTask"/>
+    
+     <bean 
+        id="entryProcessCheckFinishTrigger" 
+        class="org.springframework.scheduling.quartz.CronTriggerBean">
+        
+        <property name="jobDetail" ref="processCheckFinishJobTask" />
+        
+         <!-- Execute at 03:00 everyday -->
+         <property name="cronExpression" value="0 0 3 * * ?" />
+         <!-- <property name="cronExpression" value="0 */2 * * * ?" /> --> 
+        
+    </bean>
+    
+    <util:list id="quartzTriggers">
+		<ref bean="endProcessTrigger" />
+		<ref bean="entryProcessCheckAlertTrigger" />
+		<ref bean="entryProcessCheckFinishTrigger" />
+		<ref bean="entryprocessCheckNoticeTrigger" />
+	</util:list>
+					
+</beans>

@@ -1,0 +1,19 @@
+create_table.sql填写原则：
+
+1.新数据表请按表名字母的降序排列，放于文件中的合适位置
+2.数据库表名以t_开头
+3.数据库表名前缀包括：t_adm，t_aud，t_core，t_stat
+4.创建数据库表的语句请以create_table.sql中已有的语句为参考，关键字大写，数据类型小写，表名小写，字段名小写
+5.数据库表名以t_adm，t_aud，t_core，t_stat开头，各单词以下划线分割
+6.字段名小写，各单词以下划线分割
+7.外键，索引，唯一键命名规范：
+外键：fk_数据库表名（不带t_adm，t_aud，t_core，t_stat前缀）_字段名称
+索引：idx_数据库表名（不带t_adm，t_aud，t_core，t_stat前缀）_字段名称
+唯一键：uk_数据库表名（不带t_adm，t_aud，t_core，t_stat前缀）_字段名称
+例如 t_adm_call_record -> call_type_id: 
+fk_call_record_call_type
+idx_call_record_call_type
+uk_call_record_call_type
+
+组合唯一键：t_adm_call_record -> call_type_id, call_state_id
+uk_call_record_call_type_call_state

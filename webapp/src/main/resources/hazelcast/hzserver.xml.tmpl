@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Copyright (c) 2008-2013, Hazelcast, Inc. All Rights Reserved. ~ ~ 
+	Licensed under the Apache License, Version 2.0 (the "License"); ~ you may 
+	not use this file except in compliance with the License. ~ You may obtain 
+	a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 ~ 
+	~ Unless required by applicable law or agreed to in writing, software ~ distributed 
+	under the License is distributed on an "AS IS" BASIS, ~ WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. ~ See the License for 
+	the specific language governing permissions and ~ limitations under the License. -->
+
+<hazelcast
+	xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.6.xsd"
+	xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<group>
+		<name>@HAZELCAST_GROUP_NAME@</name>
+		<password>@HAZELCAST_GROUP_PASSWORD@</password>
+	</group>
+
+	<management-center enabled="false" />
+
+	<properties>
+		<property name="hazelcast.logging.type">slf4j</property>
+		<property name="hazelcast.initial.min.cluster.size">@HAZELCAST_TCP_IP_MEMBERS_COUNT@</property>
+	</properties>
+
+	<network>
+		<port auto-increment="true" port-count="100">@HAZELCAST_PORT@</port>
+		<join>
+			<multicast enabled="false" />
+			<tcp-ip enabled="true">
+				<member>@HAZELCAST_TCP_IP_MEMBERS_1@</member>
+				<member>@HAZELCAST_TCP_IP_MEMBERS_2@</member>
+			</tcp-ip>
+		</join>
+	</network>
+	
+	<map name="Sessions">
+		<backup-count>1</backup-count>
+		<max-size policy="PER_NODE">10000</max-size>
+		<eviction-percentage>10</eviction-percentage>
+		<time-to-live-seconds>0</time-to-live-seconds>
+		<max-idle-seconds>1800</max-idle-seconds>
+		<eviction-policy>LRU</eviction-policy>
+	</map>
+
+</hazelcast>

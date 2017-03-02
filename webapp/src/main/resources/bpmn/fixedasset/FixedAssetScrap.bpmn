@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="fixedAssetScrap" name="固定资产报废流程" isExecutable="true">
+    <startEvent id="create" name="站长发起报废流程" activiti:initiator="createdByCode"></startEvent>
+    <userTask id="adminSpecialistApprove" name="行政专员审批" activiti:assignee="${employeeHandler.getSuperiorWithLocationCode(locationCode, 'ADMIN_SPECIALIST')}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="create" targetRef="adminSpecialistApprove"></sequenceFlow>
+    <exclusiveGateway id="adminSpecialistApproveResult" name="行政专员审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="adminSpecialistApprove" targetRef="adminSpecialistApproveResult"></sequenceFlow>
+    <serviceTask id="onProcessPass" name="审批通过" activiti:expression="${resultManager.onProcessPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow3" sourceRef="adminSpecialistApproveResult" targetRef="onProcessPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${adminSpecialistApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="onProcessNotPass" name="审批不通过" activiti:expression="${resultManager.onProcessNotPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow4" sourceRef="adminSpecialistApproveResult" targetRef="onProcessNotPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!adminSpecialistApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="onProcessPass" targetRef="endevent1"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow6" sourceRef="onProcessNotPass" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_fixedAssetScrap">
+    <bpmndi:BPMNPlane bpmnElement="fixedAssetScrap" id="BPMNPlane_fixedAssetScrap">
+      <bpmndi:BPMNShape bpmnElement="create" id="BPMNShape_create">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="adminSpecialistApprove" id="BPMNShape_adminSpecialistApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="141.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="adminSpecialistApproveResult" id="BPMNShape_adminSpecialistApproveResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="290.0" y="238.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessPass" id="BPMNShape_onProcessPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="375.0" y="231.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessNotPass" id="BPMNShape_onProcessNotPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="258.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="525.0" y="241.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="293.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="95.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="141.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="246.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="330.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="375.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="310.0" y="238.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="480.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="310.0" y="110.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="65.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

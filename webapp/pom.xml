@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.i360r</groupId>
+		<artifactId>i360r-bpm</artifactId>
+		<version>1.0</version>
+	</parent>
+
+	<artifactId>i360r-bpm-webapp</artifactId>
+	<packaging>war</packaging>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${maven-war-plugin.version}</version>
+				<configuration>
+					<!-- exclude none version assets -->
+					<warSourceExcludes>assets/**</warSourceExcludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>${maven-antrun-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<configuration>
+							<target>
+								<echo message="Performing build time token replacement ..." />
+								<copy todir="${project.build.outputDirectory}" overwrite="true">
+									<fileset dir="${project.build.outputDirectory}"
+										includes="**/*.tmpl" />
+									<mapper type="glob" from="*.tmpl" to="*" />
+									<filterset begintoken="@" endtoken="@">
+										<filtersfile file="${basedir}/build.properties" />
+									</filterset>
+								</copy>
+								
+								<!-- Create asset.version property file -->
+								<echo file="${project.build.outputDirectory}/asset.version"
+									append="false" force="true" message="asset.version=${maven.build.timestamp}" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

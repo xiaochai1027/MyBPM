@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="cityReimburse" name="城市报销申请(后付款)" isExecutable="true">
+    <startEvent id="create" name="城市行政填写报销申请" activiti:initiator="createdByCode"></startEvent>
+    <exclusiveGateway id="operationManagementDirectorApproveResult" name="运营管理总监审批结果"></exclusiveGateway>
+    <userTask id="modifyReimburseApplication" name="修改报销申请" activiti:assignee="${createdByCode}"></userTask>
+    <exclusiveGateway id="isMoreThanOperationManagementDirectorApprovedLimit" name="金额是否超出物流总经理审批限额"></exclusiveGateway>
+    <sequenceFlow id="flow6" sourceRef="operationManagementDirectorApproveResult" targetRef="isMoreThanOperationManagementDirectorApprovedLimit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${operationManagementDirectorApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="COOApprove" name="COO审批" activiti:assignee="${businessAreaFundHandler.getCOO()}"></userTask>
+    <sequenceFlow id="flow7" sourceRef="isMoreThanOperationManagementDirectorApprovedLimit" targetRef="COOApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${exceedOperationManagementDirectorApprovedLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="COOApprovedResult" name="COO审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow8" sourceRef="COOApprove" targetRef="COOApprovedResult"></sequenceFlow>
+    <exclusiveGateway id="isMoreThanCOOApproveLimit" name="金额是否超出COO审批上限"></exclusiveGateway>
+    <sequenceFlow id="flow9" sourceRef="COOApprovedResult" targetRef="isMoreThanCOOApproveLimit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${COOApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="CEOApprove" name="CEO审批" activiti:assignee="${businessAreaFundHandler.getCEO()}"></userTask>
+    <sequenceFlow id="flow10" sourceRef="isMoreThanCOOApproveLimit" targetRef="CEOApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${exceedCOOApproveLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="CEOApprovedResult" name="CEO审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow11" sourceRef="CEOApprove" targetRef="CEOApprovedResult"></sequenceFlow>
+    <userTask id="accountantConfirm" name="会计确认" activiti:assignee="${employeeHandler.getEmployeePositionByPositionCodeAndLocationId('ACCOUNTANT', cityCode)}"></userTask>
+    <sequenceFlow id="flow12" sourceRef="CEOApprovedResult" targetRef="accountantConfirm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${CEOApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="isMoreThanOperationManagementDirectorApprovedLimit" targetRef="accountantConfirm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!exceedOperationManagementDirectorApprovedLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="isMoreThanCOOApproveLimit" targetRef="accountantConfirm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!exceedCOOApproveLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="accountantConfirmResult" name="会计审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow17" sourceRef="accountantConfirm" targetRef="accountantConfirmResult"></sequenceFlow>
+    <userTask id="cashierConfirm" name="出纳确认" activiti:candidateGroups="CASHIER"></userTask>
+    <sequenceFlow id="flow19" sourceRef="accountantConfirmResult" targetRef="cashierConfirm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${accountantConfirmed}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="approveReapplyResult" name="重新审批"></exclusiveGateway>
+    <serviceTask id="onProcessNotPass" name="放弃报销申请" activiti:expression="${resultManager.onProcessNotPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow22" sourceRef="approveReapplyResult" targetRef="onProcessNotPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!approveReapply}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow23" sourceRef="onProcessNotPass" targetRef="endevent3"></sequenceFlow>
+    <serviceTask id="onProcessPass" name="确认通过" activiti:expression="${resultManager.onProcessPass(execution)}"></serviceTask>
+    <endEvent id="endevent4" name="End"></endEvent>
+    <sequenceFlow id="flow26" sourceRef="onProcessPass" targetRef="endevent4"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow27" sourceRef="cashierConfirm" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow28" sourceRef="exclusivegateway1" targetRef="onProcessPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${cashierConfirmed}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow29" sourceRef="exclusivegateway1" targetRef="onProcessNotPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!cashierConfirmed}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="directManagementCityManagerApprove" name="上级城市经理审批" activiti:assignee="${employeeHandler.getSuperiorWithPositionCode(lastProcessorCode, 'DIRECT_MANAGEMENT_CITY_MANAGER')}">
+      <documentation>DIRECT_MANAGEMENT_CITY_MANAGER</documentation>
+    </userTask>
+    <userTask id="operationManagementViceDirectorApprove" name="运营管理副总监审批" activiti:assignee="${employeeHandler.getSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_VICE_DIRECTOR')}"></userTask>
+    <userTask id="operationManagementDirectorApprove" name="运营管理总监审批" activiti:assignee="${employeeHandler.getSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_DIRECTOR')}"></userTask>
+    <exclusiveGateway id="ishasDirectManagementCityManager" name="是否有城市经理"></exclusiveGateway>
+    <exclusiveGateway id="directManagementCityManagerApproveResult" name="城市经理审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow30" sourceRef="create" targetRef="ishasDirectManagementCityManager"></sequenceFlow>
+    <exclusiveGateway id="isHasOperationManagementViceDirector" name="是否有运营管理副总监"></exclusiveGateway>
+    <exclusiveGateway id="operationManagementViceDirectorApproveResult" name="大区总监审批结果"></exclusiveGateway>
+    <exclusiveGateway id="isMoreThanOperationManagementViceDirectorApprovedLimit" name="是否超过运营管理副总监审批限额"></exclusiveGateway>
+    <exclusiveGateway id="isHasOperationManagementDirector" name="是否有运营管理总监"></exclusiveGateway>
+    <sequenceFlow id="flow39" sourceRef="operationManagementViceDirectorApprove" targetRef="operationManagementViceDirectorApproveResult"></sequenceFlow>
+    <sequenceFlow id="flow40" sourceRef="operationManagementViceDirectorApproveResult" targetRef="isMoreThanOperationManagementViceDirectorApprovedLimit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${operationManagementViceDirectorApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow41" sourceRef="isMoreThanOperationManagementViceDirectorApprovedLimit" targetRef="isHasOperationManagementDirector">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${exceedOperationManagementViceDirectorApprovedLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow42" sourceRef="isHasOperationManagementDirector" targetRef="operationManagementDirectorApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_DIRECTOR')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow43" sourceRef="operationManagementDirectorApprove" targetRef="operationManagementDirectorApproveResult"></sequenceFlow>
+    <sequenceFlow id="flow44" sourceRef="operationManagementDirectorApproveResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!operationManagementDirectorApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow45" sourceRef="operationManagementViceDirectorApproveResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!operationManagementViceDirectorApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow46" sourceRef="approveReapplyResult" targetRef="ishasDirectManagementCityManager">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approveReapply}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow49" sourceRef="isHasOperationManagementDirector" targetRef="COOApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_DIRECTOR')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow51" sourceRef="isMoreThanOperationManagementViceDirectorApprovedLimit" targetRef="accountantConfirm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!exceedOperationManagementViceDirectorApprovedLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow52" sourceRef="modifyReimburseApplication" targetRef="approveReapplyResult"></sequenceFlow>
+    <sequenceFlow id="flow53" sourceRef="ishasDirectManagementCityManager" targetRef="directManagementCityManagerApprove">
+      <documentation>DIRECT_MANAGEMENT_CITY_MANAGER</documentation>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode,  'DIRECT_MANAGEMENT_CITY_MANAGER')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow54" sourceRef="directManagementCityManagerApprove" targetRef="directManagementCityManagerApproveResult"></sequenceFlow>
+    <sequenceFlow id="flow56" sourceRef="isHasOperationManagementViceDirector" targetRef="operationManagementViceDirectorApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_VICE_DIRECTOR')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow57" sourceRef="directManagementCityManagerApproveResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!directManagementCityManagerApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow58" sourceRef="isHasOperationManagementViceDirector" targetRef="isHasOperationManagementDirector">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode, 'OPERATION_MANAGEMENT_VICE_DIRECTOR')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow59" sourceRef="COOApprovedResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!COOApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow60" sourceRef="CEOApprovedResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!CEOApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow61" sourceRef="accountantConfirmResult" targetRef="modifyReimburseApplication">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!accountantConfirmed}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow62" sourceRef="directManagementCityManagerApproveResult" targetRef="isHasOperationManagementViceDirector">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${directManagementCityManagerApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow63" sourceRef="ishasDirectManagementCityManager" targetRef="isHasOperationManagementViceDirector">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!employeeHandler.hasSuperiorWithPositionCode(lastProcessorCode,  'DIRECT_MANAGEMENT_CITY_MANAGER')}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_cityReimburse">
+    <bpmndi:BPMNPlane bpmnElement="cityReimburse" id="BPMNPlane_cityReimburse">
+      <bpmndi:BPMNShape bpmnElement="create" id="BPMNShape_create">
+        <omgdc:Bounds height="35.0" width="35.0" x="96.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="operationManagementDirectorApproveResult" id="BPMNShape_operationManagementDirectorApproveResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="1140.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="modifyReimburseApplication" id="BPMNShape_modifyReimburseApplication">
+        <omgdc:Bounds height="55.0" width="105.0" x="250.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isMoreThanOperationManagementDirectorApprovedLimit" id="BPMNShape_isMoreThanOperationManagementDirectorApprovedLimit">
+        <omgdc:Bounds height="40.0" width="40.0" x="1225.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="COOApprove" id="BPMNShape_COOApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="1330.0" y="279.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="COOApprovedResult" id="BPMNShape_COOApprovedResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="1460.0" y="286.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isMoreThanCOOApproveLimit" id="BPMNShape_isMoreThanCOOApproveLimit">
+        <omgdc:Bounds height="40.0" width="40.0" x="1545.0" y="287.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CEOApprove" id="BPMNShape_CEOApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="1640.0" y="283.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CEOApprovedResult" id="BPMNShape_CEOApprovedResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="1780.0" y="288.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="accountantConfirm" id="BPMNShape_accountantConfirm">
+        <omgdc:Bounds height="55.0" width="105.0" x="1865.0" y="281.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="accountantConfirmResult" id="BPMNShape_accountantConfirmResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="2015.0" y="289.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cashierConfirm" id="BPMNShape_cashierConfirm">
+        <omgdc:Bounds height="55.0" width="105.0" x="2120.0" y="282.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="approveReapplyResult" id="BPMNShape_approveReapplyResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="166.0" y="152.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessNotPass" id="BPMNShape_onProcessNotPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="131.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="70.0" y="55.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessPass" id="BPMNShape_onProcessPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="2360.0" y="283.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+        <omgdc:Bounds height="35.0" width="35.0" x="2395.0" y="396.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="2270.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="directManagementCityManagerApprove" id="BPMNShape_directManagementCityManagerApprove">
+        <omgdc:Bounds height="65.0" width="114.0" x="256.0" y="269.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="operationManagementViceDirectorApprove" id="BPMNShape_operationManagementViceDirectorApprove">
+        <omgdc:Bounds height="75.0" width="117.0" x="641.0" y="268.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="operationManagementDirectorApprove" id="BPMNShape_operationManagementDirectorApprove">
+        <omgdc:Bounds height="67.0" width="109.0" x="1010.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ishasDirectManagementCityManager" id="BPMNShape_ishasDirectManagementCityManager">
+        <omgdc:Bounds height="40.0" width="40.0" x="166.0" y="281.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="directManagementCityManagerApproveResult" id="BPMNShape_directManagementCityManagerApproveResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="396.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isHasOperationManagementViceDirector" id="BPMNShape_isHasOperationManagementViceDirector">
+        <omgdc:Bounds height="40.0" width="40.0" x="535.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="operationManagementViceDirectorApproveResult" id="BPMNShape_operationManagementViceDirectorApproveResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="788.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isMoreThanOperationManagementViceDirectorApprovedLimit" id="BPMNShape_isMoreThanOperationManagementViceDirectorApprovedLimit">
+        <omgdc:Bounds height="40.0" width="40.0" x="856.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isHasOperationManagementDirector" id="BPMNShape_isHasOperationManagementDirector">
+        <omgdc:Bounds height="40.0" width="40.0" x="926.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="1180.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1225.0" y="305.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="1265.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1330.0" y="306.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="1435.0" y="306.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1460.0" y="306.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="1500.0" y="306.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1545.0" y="307.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="1585.0" y="307.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1640.0" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="1745.0" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1780.0" y="308.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="1820.0" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1865.0" y="308.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="1245.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1245.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1578.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="1565.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1565.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1738.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="1970.0" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2015.0" y="309.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="2055.0" y="309.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2120.0" y="309.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="186.0" y="152.0"></omgdi:waypoint>
+        <omgdi:waypoint x="183.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="131.0" y="72.0"></omgdi:waypoint>
+        <omgdi:waypoint x="105.0" y="72.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="2412.0" y="338.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2412.0" y="396.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="2225.0" y="309.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2270.0" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="2310.0" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2360.0" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="2290.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2289.0" y="83.0"></omgdi:waypoint>
+        <omgdi:waypoint x="236.0" y="72.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow30" id="BPMNEdge_flow30">
+        <omgdi:waypoint x="131.0" y="301.0"></omgdi:waypoint>
+        <omgdi:waypoint x="166.0" y="301.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow39" id="BPMNEdge_flow39">
+        <omgdi:waypoint x="758.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="788.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="828.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="856.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow41" id="BPMNEdge_flow41">
+        <omgdi:waypoint x="896.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="926.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="966.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="303.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow43" id="BPMNEdge_flow43">
+        <omgdi:waypoint x="1119.0" y="303.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow44" id="BPMNEdge_flow44">
+        <omgdi:waypoint x="1160.0" y="284.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1159.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow45" id="BPMNEdge_flow45">
+        <omgdi:waypoint x="808.0" y="284.0"></omgdi:waypoint>
+        <omgdi:waypoint x="808.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow46" id="BPMNEdge_flow46">
+        <omgdi:waypoint x="186.0" y="192.0"></omgdi:waypoint>
+        <omgdi:waypoint x="186.0" y="281.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow49" id="BPMNEdge_flow49">
+        <omgdi:waypoint x="946.0" y="324.0"></omgdi:waypoint>
+        <omgdi:waypoint x="946.0" y="368.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1385.0" y="368.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1382.0" y="334.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow51" id="BPMNEdge_flow51">
+        <omgdi:waypoint x="876.0" y="324.0"></omgdi:waypoint>
+        <omgdi:waypoint x="875.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1368.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1666.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="369.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1917.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow52" id="BPMNEdge_flow52">
+        <omgdi:waypoint x="250.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="206.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow53" id="BPMNEdge_flow53">
+        <omgdi:waypoint x="206.0" y="301.0"></omgdi:waypoint>
+        <omgdi:waypoint x="256.0" y="301.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow54" id="BPMNEdge_flow54">
+        <omgdi:waypoint x="370.0" y="301.0"></omgdi:waypoint>
+        <omgdi:waypoint x="396.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow56" id="BPMNEdge_flow56">
+        <omgdi:waypoint x="575.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="641.0" y="305.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow57" id="BPMNEdge_flow57">
+        <omgdi:waypoint x="416.0" y="284.0"></omgdi:waypoint>
+        <omgdi:waypoint x="416.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow58" id="BPMNEdge_flow58">
+        <omgdi:waypoint x="555.0" y="324.0"></omgdi:waypoint>
+        <omgdi:waypoint x="555.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="621.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="670.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="946.0" y="324.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="1480.0" y="286.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1480.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
+        <omgdi:waypoint x="1800.0" y="288.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1800.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow61" id="BPMNEdge_flow61">
+        <omgdi:waypoint x="2055.0" y="309.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2035.0" y="289.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2033.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow62" id="BPMNEdge_flow62">
+        <omgdi:waypoint x="436.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="535.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
+        <omgdi:waypoint x="186.0" y="321.0"></omgdi:waypoint>
+        <omgdi:waypoint x="186.0" y="366.0"></omgdi:waypoint>
+        <omgdi:waypoint x="364.0" y="366.0"></omgdi:waypoint>
+        <omgdi:waypoint x="554.0" y="366.0"></omgdi:waypoint>
+        <omgdi:waypoint x="555.0" y="324.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

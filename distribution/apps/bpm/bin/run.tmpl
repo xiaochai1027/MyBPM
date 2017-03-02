@@ -1,0 +1,134 @@
+#!/bin/sh
+
+CATALINA_HOME=@TOMCAT_BASE@;
+export CATALINA_HOME
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@TOMCAT_HOME@/lib
+export LD_LIBRARY_PATH
+ 
+function getPid () {
+ 
+     PID=`ps -efwww | grep $CATALINA_HOME | grep java | grep -v grep | grep -v "Bootstrap stop" | awk '{print $2}'`
+ 
+}
+ 
+function checkProcess () {
+ 
+     getPid {}
+ 
+     if [ -z "$PID" ] ; then
+          echo
+          echo "Tomcat: Not running!"
+     else
+ 
+ 
+          # Make sure Tomcat stops if it takes
+          # too long terminate the process
+ 
+          i=0
+          while [ ! -z "$PID" ] ; do
+ 
+               (( i = $i + 1 ))
+ 
+               echo -n "."
+ 
+               if [ $i -eq 5 ] ; then
+ 
+                    echo ""
+                    echo "Tomcat: Shutdown exceeded time limit !!!"
+                    echo "Tomcat: Terminating PID: $PID"
+                    echo ""
+ 
+                    kill -9 $PID
+               fi
+ 
+               sleep 1
+               getPid {}
+ 
+          done
+ 
+          echo
+         echo "Tomcat: Shutdown complete"
+ 
+     fi
+ 
+}
+ 
+function start () {
+    echo "Tomcat: Starting"
+       
+    getPid {}
+ 
+    if [ -n "$PID" ] ; then
+ 
+        echo "Tomcat: Already Running!"
+        exit 0
+ 
+    fi
+ 
+    ant -f $CATALINA_HOME/bin/build.xml start > /dev/null 2>&1
+ 
+    sleep 3
+    getPid {}
+ 
+    if [ -z "$PID" ] ; then
+        echo "Tomcat: FAILED"
+    else
+        echo "Tomcat: $PID"
+    fi
+}
+ 
+function stop () {
+    getPid {}
+    echo -n "Tomcat: Shutting down - $PID "
+ 
+    ant -f $CATALINA_HOME/bin/build.xml stop > /dev/null 2>&1
+ 
+    checkProcess {}
+}
+
+function debug () {
+    echo "Tomcat Debug: Starting"
+       
+    getPid {}
+ 
+    if [ -n "$PID" ] ; then
+ 
+        echo "Tomcat: Already Running!"
+        exit 0
+ 
+    fi
+ 
+    ant -f $CATALINA_HOME/bin/build-debug.xml start > /dev/null 2>&1
+ 
+    sleep 3
+    getPid {}
+ 
+    if [ -z "$PID" ] ; then
+        echo "Tomcat: FAILED"
+    else
+        echo "Tomcat: $PID"
+    fi
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        sleep 2
+        start
+        ;;
+    debug)
+        debug
+        ;;
+    *)
+        echo $"Usage: tomcat {start|stop|restart|debug}"
+        exit
+esac
+

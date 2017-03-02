@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<project name="tomcat-runner" >
+    
+    <property name="tomcat.home" value="@TOMCAT_HOME@"/>
+    <property name="tomcat.base" value="@TOMCAT_BASE@"/>
+    <property name="jvm.heap.size" value="@JVM_HEAP_SIZE@"/>
+    <property name="jvm.perm.size" value="@JVM_PERM_SIZE@"/>
+
+    <target name="start" description="Start tomcat server">
+        <echo>start tomcat server ...</echo>
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true" spawn="true" >
+            <arg value="start"/>
+
+            <classpath>
+                 <fileset dir="${tomcat.home}/bin">
+                    <include name="**/*.jar" />
+                </fileset>
+                <fileset dir="${tomcat.home}/lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+
+            <jvmarg value="-Xmn256M" />
+            <jvmarg value="-Xms${jvm.heap.size}M" />
+            <jvmarg value="-Xmx${jvm.heap.size}M" />
+            <jvmarg value="-XX:PermSize=${jvm.perm.size}M" />
+            <jvmarg value="-XX:MaxPermSize=${jvm.perm.size}M" />
+            <jvmarg value="-XX:+UseConcMarkSweepGC" />
+			<jvmarg value="-XX:CMSInitiatingOccupancyFraction=75" />
+            <jvmarg value="-Xloggc:../logs/gc.log" />
+            <jvmarg value="-XX:+PrintGCDetails" />
+            <jvmarg value="-XX:+PrintGCDateStamps" />
+            <jvmarg value="-XX:+HeapDumpOnOutOfMemoryError" />
+            <jvmarg value="-Xdebug" />
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=@TOMCAT_PORT_BASE@9,server=y,suspend=n" />
+            <jvmarg value="-Dfile.encoding=UTF-8" />
+            <jvmarg value="-Djava.net.preferIPv4Stack=true" />
+            <jvmarg value="-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager" />
+            <jvmarg value="-Djava.endorsed.dirs=${tomcat.home}/endorsed" />
+            <jvmarg value="-Djava.util.logging.config.file=${tomcat.base}/conf/logging.properties" />
+            <jvmarg value="-Dorg.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger" />
+            <jvmarg value="-Djava.io.tmpdir=${tomcat.base}/temp" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}" />
+            <jvmarg value="-Dcatalina.base=${tomcat.base}" />
+            <jvmarg value="-Dcom.sun.management.jmxremote" />
+            <jvmarg value="-Dcom.sun.management.jmxremote.ssl=false" />
+            <jvmarg value="-Dcom.sun.management.jmxremote.authenticate=false" />
+        </java>
+    </target>
+
+    <target name="stop" description="Stop tomcat server">
+        <echo>stop tomcat server ...</echo>
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true" spawn="false" >
+            <arg value="stop"/>
+
+            <classpath>
+                 <fileset dir="${tomcat.home}/bin">
+                    <include name="**/*.jar" />
+                </fileset>
+                <fileset dir="${tomcat.home}/lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+
+            <jvmarg value="-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager" />
+            <jvmarg value="-Djava.endorsed.dirs=${tomcat.home}/endorsed" />
+            <jvmarg value="-Djava.util.logging.config.file=${tomcat.base}/conf/logging.properties" />
+            <jvmarg value="-Djava.io.tmpdir=${tomcat.base}/temp" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}" />
+            <jvmarg value="-Dcatalina.base=${tomcat.base}" />
+        </java>
+    </target>
+</project>
+
+

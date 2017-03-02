@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>load.html</title>
+
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+
+<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+<script src="jquery-1.4.2.js"></script>
+</head>
+
+<script type="application/javascript">
+	
+  		$().ready(function(){
+			/**
+			 * 第一个参数是url
+			 * 第二个参数是data,
+			 * 第三个参数是回调函数  只有服务器成功响应以后才能执行
+			 */
+			//$.post("http://bpm.jiahuanle.local/services/rs/process/citySalary/create",{"salaryId":"6","name":"得到接口","month":"2016-08"});
+  	
+			 $.ajax({
+			  	    type: "post",
+			  	    url: "http://bpm.jiahuanle.local/services/rs/process/globalSalary/create",
+			  	    data: '{"globalSalaryId": "22", "name": "globalpass", "month": "2015-04"}',
+			  	    contentType: "application/json; charset=utf-8",
+			  	  	processData : false
+			 });
+  		
+  		});
+  	
+	
+		
+  	    
+  	  
+  	   
+  
+
+
+</script>
+<body>
+	This is my PostTest page.
+	<br>
+	<div></div>
+</body>
+</html>

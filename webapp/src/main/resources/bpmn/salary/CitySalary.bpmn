@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="citySalary" name="城市薪资审核" isExecutable="true">
+    <startEvent id="create" name="城市政委或城市经理发送申请" activiti:initiator="createdByCode"></startEvent>
+    <userTask id="chiefCommissarApprove" name="总政委审批" activiti:assignee="${salaryHandler.getSuperiorWithPosition(createdByCode, 'CHIEF_COMMISSAR', '总政委', true)}"></userTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow3" sourceRef="chiefCommissarApprove" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="compensationSpecialistCheck" name="薪资专员核对" activiti:assignee="${salaryHandler.getSuperiorWithPosition(createdByCode, 'COMPENSATION_SPECIALIST', '薪酬专员', true)}"></userTask>
+    <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="compensationSpecialistCheck">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${chiefCommissarApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow9" sourceRef="compensationSpecialistCheck" targetRef="exclusivegateway3"></sequenceFlow>
+    <serviceTask id="onProcessPass" name="确认通过" activiti:expression="${resultManager.onProcessPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway3" targetRef="onProcessPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${compensationSpecialistChecked}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent" name="End"></endEvent>
+    <sequenceFlow id="flow11" sourceRef="onProcessPass" targetRef="endevent"></sequenceFlow>
+    <serviceTask id="onProcessNoPass" name="审批未通过" activiti:expression="${resultManager.onProcessNotPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow13" sourceRef="exclusivegateway3" targetRef="onProcessNoPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!compensationSpecialistChecked}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="onProcessNoPass" targetRef="endevent"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="exclusivegateway1" targetRef="onProcessNoPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!chiefCommissarApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="create" targetRef="chiefCommissarApprove"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_citySalary">
+    <bpmndi:BPMNPlane bpmnElement="citySalary" id="BPMNPlane_citySalary">
+      <bpmndi:BPMNShape bpmnElement="create" id="BPMNShape_create">
+        <omgdc:Bounds height="35.0" width="35.0" x="153.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="chiefCommissarApprove" id="BPMNShape_chiefCommissarApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="260.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="410.0" y="298.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="compensationSpecialistCheck" id="BPMNShape_compensationSpecialistCheck">
+        <omgdc:Bounds height="55.0" width="105.0" x="495.0" y="291.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="645.0" y="299.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessPass" id="BPMNShape_onProcessPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="760.0" y="291.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent" id="BPMNShape_endevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="910.0" y="301.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessNoPass" id="BPMNShape_onProcessNoPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="760.0" y="440.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="365.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="410.0" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="450.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="495.0" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="600.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="645.0" y="319.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="685.0" y="319.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="865.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="665.0" y="339.0"></omgdi:waypoint>
+        <omgdi:waypoint x="665.0" y="467.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="467.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="865.0" y="467.0"></omgdi:waypoint>
+        <omgdi:waypoint x="927.0" y="467.0"></omgdi:waypoint>
+        <omgdi:waypoint x="927.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="430.0" y="338.0"></omgdi:waypoint>
+        <omgdi:waypoint x="430.0" y="467.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="467.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="188.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="317.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

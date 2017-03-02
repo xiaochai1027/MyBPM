@@ -1,0 +1,3 @@
+<Context
+	sessionCookiePath="/"
+	docBase="../../../../webapp/target/i360r-bpm-webapp-1.0" />

@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+	
+	<bean id="taskManagementService" 
+	    class="com.i360r.bpm.service.rs.task.TaskManagementService" 
+	    parent="abstractEngineHandler"/> 
+	
+ 	<jaxrs:server address="/rs/task">
+		<jaxrs:serviceBeans>
+			<ref bean="taskManagementService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="stationManagerEntryService" 
+	    class="com.i360r.bpm.service.rs.process.delivery.stationmanager.entry.StationManagerEntryService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/stationManagerEntry">
+		<jaxrs:serviceBeans>
+			<ref bean="stationManagerEntryService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server> 
+	
+	<bean id="deliveryStaffEntryService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaffentry.DeliveryStaffEntryService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffEntry">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffEntryService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="deliveryStaffDimissionService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaffdimission.DeliveryStaffDimissionService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffDimission">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffDimissionService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="deliveryStaffCancelLeaveService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaffcancelleave.DeliveryStaffCancelLeaveService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffCancelLeave">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffCancelLeaveService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	
+	<bean id="deliveryStaffLeaveService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaffleave.DeliveryStaffLeaveService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffLeave">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffLeaveService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="attendanceRawDataService"
+	    class="com.i360r.bpm.service.rs.process.attendance.AttendanceRawDataService"
+	    />
+
+ 	<jaxrs:server address="/rs/process/attendanceRawData">
+		<jaxrs:serviceBeans>
+			<ref bean="attendanceRawDataService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="deliveryStaffWorkOvertimeService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaff.workovertime.DeliveryStaffWorkOvertimeService" /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffWorkOvertime">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffWorkOvertimeService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="deliveryStaffGradeService" 
+	    class="com.i360r.bpm.service.rs.process.deliverystaff.grade.DeliveryStaffGradeService" /> 
+	
+ 	<jaxrs:server address="/rs/process/deliveryStaffGrade">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffGradeService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="spendAfterReimburseService" 
+	    class="com.i360r.bpm.service.rs.process.spendAfterReimburse.SpendAfterReimburseService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/spendAfterReimburse">
+		<jaxrs:serviceBeans>
+			<ref bean="spendAfterReimburseService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="spendBeforeReimburseService" 
+	    class="com.i360r.bpm.service.rs.process.spendBeforeReimburse.SpendBeforeReimburseService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/spendBeforeReimburse">
+		<jaxrs:serviceBeans>
+			<ref bean="spendBeforeReimburseService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="cityReimburseService" 
+	    class="com.i360r.bpm.service.rs.process.cityReimburse.CityReimburseService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/cityReimburse">
+		<jaxrs:serviceBeans>
+			<ref bean="cityReimburseService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="revenueApplyService" 
+	    class="com.i360r.bpm.service.rs.process.revenueApply.RevenueApplyService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/revenueApply">
+		<jaxrs:serviceBeans>
+			<ref bean="revenueApplyService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="reservedCashRefundService" 
+	    class="com.i360r.bpm.service.rs.process.reservedCashRefund.ReservedCashRefundService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/reservedCashRefund">
+		<jaxrs:serviceBeans>
+			<ref bean="reservedCashRefundService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="reservedCashApplyService" 
+	    class="com.i360r.bpm.service.rs.process.reservedCashApply.ReservedCashApplyService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/reservedCashApply">
+		<jaxrs:serviceBeans>
+			<ref bean="reservedCashApplyService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="loanRefundService" 
+	    class="com.i360r.bpm.service.rs.process.loanRefund.LoanRefundService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/loanRefund">
+		<jaxrs:serviceBeans>
+			<ref bean="loanRefundService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="loanApplyService" 
+	    class="com.i360r.bpm.service.rs.process.loanApply.LoanApplyService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/loanApply">
+		<jaxrs:serviceBeans>
+			<ref bean="loanApplyService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="fixedAssetBusinessAreaTransferOut" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.businessareatransferout.FixedAssetBusinessAreaTransferOutService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetBusinessAreaTransferOut">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetBusinessAreaTransferOut" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="fixedAssetCityDistribute" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.citydistribute.FixedAssetCityDistributeService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetCityDistribute">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetCityDistribute" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="fixedAssetCityDistributeUnchecked" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.citydistributeunchecked.FixedAssetCityDistributeUncheckedService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetCityDistributeUnchecked">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetCityDistributeUnchecked" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="fixedAssetCityTransferOut" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.citytransferout.FixedAssetCityTransferOutService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetCityTransferOut">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetCityTransferOut" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="fixedAssetNationalDistribute" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.nationaldistribute.FixedAssetNationalDistributeService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetNationalDistribute">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetNationalDistribute" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="fixedAssetScrap" 
+	    class="com.i360r.bpm.service.rs.process.fixedasset.scrap.FixedAssetScrapService"
+	    /> 
+	
+ 	<jaxrs:server address="/rs/process/fixedAssetScrap">
+		<jaxrs:serviceBeans>
+			<ref bean="fixedAssetScrap" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="citySalaryService" 
+		class="com.i360r.bpm.service.rs.process.employee.city.salary.CitySalaryService"
+		/>
+		
+	<jaxrs:server address="/rs/process/citySalary">
+		<jaxrs:serviceBeans>
+			<ref bean="citySalaryService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>	
+	
+	<bean id="globalSalaryService" 
+		class="com.i360r.bpm.service.rs.process.employee.global.salary.GlobalSalaryService"
+		/>
+		
+	<jaxrs:server address="/rs/process/globalSalary">
+		<jaxrs:serviceBeans>
+			<ref bean="globalSalaryService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>	
+	
+	<bean id="storeAccountWalletWithdrawService" 
+		class="com.i360r.bpm.service.rs.process.store.account.wallet.withdraw.StoreAccountWalletWithdrawService"
+		/>
+		
+	<jaxrs:server address="/rs/process/storeAccountWalletWithdraw">
+		<jaxrs:serviceBeans>
+			<ref bean="storeAccountWalletWithdrawService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="storeAccountService"
+		  class="com.i360r.bpm.service.rs.process.store.account.StoreAccountService"
+	/>
+	<jaxrs:server address="/rs/process/storeAccountApply">
+		<jaxrs:serviceBeans>
+			<ref bean="storeAccountService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="storeService"
+		  class="com.i360r.bpm.service.rs.process.store.StoreService"
+	/>
+	<jaxrs:server address="/rs/process/storeApply">
+		<jaxrs:serviceBeans>
+			<ref bean="storeService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="vendorService"
+		  class="com.i360r.bpm.service.rs.process.vendor.VendorService"
+	/>
+	<jaxrs:server address="/rs/process/vendorApply">
+		<jaxrs:serviceBeans>
+			<ref bean="vendorService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="housingFeeReimburseService" class="com.i360r.bpm.service.rs.process.housingfeereimburse.HousingFeeReimburseService"/>
+	
+	<jaxrs:server address="/rs/process/housing/reimburse/fee">
+		<jaxrs:serviceBeans>
+			<ref bean="housingFeeReimburseService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="housingRentReimburseService" class="com.i360r.bpm.service.rs.process.housingrentreimburse.HousingRentReimburseService"/>
+	
+	<jaxrs:server address="/rs/process/housing/reimburse/rent">
+		<jaxrs:serviceBeans>
+			<ref bean="housingRentReimburseService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="houseCheckoutService" class="com.i360r.bpm.service.rs.process.housingcheckout.HouseCheckoutService"/>
+	
+	<jaxrs:server address="/rs/process/housing/checkout">
+		<jaxrs:serviceBeans>
+			<ref bean="houseCheckoutService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="deliveryStaffEntryTaskInternalService" class="com.i360r.bpm.service.api.internal.rs.deliverystaff.DeliveryStaffEntryTaskInternalService"/>
+	
+	<jaxrs:server address="/rs/internal/deliveryStaffEntry">
+		<jaxrs:serviceBeans>
+			<ref bean="deliveryStaffEntryTaskInternalService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="houseCheckinlService" class="com.i360r.bpm.service.rs.process.housing.contract.HouseCheckinService"/>
+	
+	<jaxrs:server address="/rs/process/housing/contract">
+		<jaxrs:serviceBeans>
+			<ref bean="houseCheckinlService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="houseReletService" class="com.i360r.bpm.service.rs.process.housing.relet.HouseReletService"/>
+	
+	<jaxrs:server address="/rs/process/housing/relet">
+		<jaxrs:serviceBeans>
+			<ref bean="houseReletService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="bpmInnerAnnouncementService" class="com.i360r.bpm.service.rs.process.inner.announcement.InnerAnnouncementService"/>
+	
+	<jaxrs:server address="/rs/process/innerAnnouncement">
+		<jaxrs:serviceBeans>
+			<ref bean="bpmInnerAnnouncementService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<bean id="vendorBillService" class="com.i360r.bpm.service.rs.process.vendor.bill.VendorBillService"/>
+	
+	<jaxrs:server address="/rs/process/vendorBillApply">
+		<jaxrs:serviceBeans>
+			<ref bean="vendorBillService" />
+			</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jacksonJaxbJsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+  	
+  	
+  	<jaxrs:client id="cdStaffInternalService"
+	    serviceClass="com.i360r.cds.api.internal.rs.deliverystaff.IDeliveryStaffInternalService"
+	    address="${cds.service.server.url:http://192.168.0.1}/services/rs/internal/deliveryStaff">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="employeePositionInternalServiceClient"
+  		serviceClass="com.i360r.cds.api.internal.rs.employee.position.IEmployeePositionInternalService"
+  		address="${cds.service.server.url:http://192.168.0.1}/services/rs/internal/employee/position">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="employeeInternalServiceClient"
+ 		serviceClass="com.i360r.cds.api.internal.rs.employee.IEmployeeInternalService"
+  		address="${cds.service.server.url:http://192.168.0.1}/services/rs/internal/employee">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="employeePassportInternalClient"
+ 		serviceClass="com.i360r.cds.api.internal.rs.employee.passport.IEmployeePassportInternalService"
+  		address="${cds.service.server.url:http://192.168.0.1}/services/rs/internal/employee/passport">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="locationInternalServiceClient"
+ 		serviceClass="com.i360r.cds.api.internal.rs.location.ILocationInternalService"
+  		address="${cds.service.server.url:http://192.168.0.1}/services/rs/internal/location">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="innerAnnouncementInternalServiceClient"
+  		serviceClass="com.i360r.oas.api.internal.rs.innner.announcement.IInnerAnnouncementInternalService"
+  		address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/inner/announcement">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+   <jaxrs:client id="inventoryInternalServiceClient"
+  		serviceClass="com.i360r.oas.api.internal.rs.inventory.IInventoryInternalService"
+  		address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/inventory">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+	
+	<jaxrs:client id="businessAreaFundServiceClient"
+	    serviceClass="com.i360r.oas.api.internal.rs.businessarea.fund.IBusinessAreaFundInternalService"
+	    address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/businessAreaFund">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="employeeSalaryServiceClient"
+	    serviceClass="com.i360r.oas.api.internal.rs.employee.salary.IEmployeeSalaryInternalService"
+	    address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/employee/salary">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="housingInternalServiceClient"
+	    serviceClass="com.i360r.oas.api.internal.rs.house.IHousingInternalService"
+	    address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/housing">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="leaveInternalServiceClient"
+	    serviceClass="com.i360r.oas.api.internal.rs.deliverystaff.leave.IDeliveryStaffLeaveInternalService"
+	    address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/deliveryStaff/leave">
+
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+  	<jaxrs:client id="attendanceInternalServiceClient"
+	    serviceClass="com.i360r.oas.api.internal.rs.attendance.IAttendanceInternalService"
+	    address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/attendance">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+  	<jaxrs:client id="storeAccountInternalServiceClient"
+	    serviceClass="com.i360r.dop.api.internal.rs.store.account.IStoreAccountInternalService"
+	    address="${dop.service.server.url:http://192.168.0.1}/services/rs/internal/store/account">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+  	<jaxrs:client id="vendorInternalServiceServiceClient"
+	    serviceClass="com.i360r.dop.api.internal.rs.vendor.IVendorInternalService"
+	    address="${dop.service.server.url:http://192.168.0.1}/services/rs/internal/vendor/">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+  	<jaxrs:client id="storeInternalServiceClient"
+	    serviceClass="com.i360r.dop.api.internal.rs.store.IStoreInternalService"
+	    address="${dop.service.server.url:http://192.168.0.1}/services/rs/internal/store">
+	    <jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+  	
+  	<jaxrs:client id="vendorBillInternalServiceClient"
+  		serviceClass="com.i360r.oas.api.internal.rs.vendor.bill.IVendorBillInternalService"
+  		address="${oas.service.server.url:http://192.168.0.1}/services/internal/rs/vendor/bill">
+  		<jaxrs:providers>
+  			<ref bean="jacksonJaxbJsonProvider" />
+  		</jaxrs:providers>
+  	</jaxrs:client>
+
+	
+</beans>

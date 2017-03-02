@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="fixedAssetCityDistributeUnchecked" name="固定资产城市库分配流程（不检查编号）" isExecutable="true">
+    <startEvent id="create" name="发起固定资产城市库分配申请" activiti:initiator="createdByCode"></startEvent>
+    <userTask id="stationManagerApprove" name="目标站点站长确认" activiti:assignee="${employeeHandler.getSuperiorWithLocationCode(locationCode, 'DELIVERY_STATION_MANAGER')}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="create" targetRef="stationManagerApprove"></sequenceFlow>
+    <exclusiveGateway id="stationManagerApproveResult" name="站长审批结果"></exclusiveGateway>
+    <sequenceFlow id="flow3" sourceRef="stationManagerApprove" targetRef="stationManagerApproveResult"></sequenceFlow>
+    <serviceTask id="onProcessPass" name="审批通过" activiti:expression="${resultManager.onProcessPass(execution)}"></serviceTask>
+    <serviceTask id="onProcessNotPass" name="审批不通过" activiti:expression="${resultManager.onProcessNotPass(execution)}"></serviceTask>
+    <sequenceFlow id="flow9" sourceRef="stationManagerApproveResult" targetRef="onProcessNotPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!stationManagerApproved}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow14" sourceRef="onProcessNotPass" targetRef="endevent2"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow15" sourceRef="onProcessPass" targetRef="endevent3"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="stationManagerApproveResult" targetRef="onProcessPass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${stationManagerApproved}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_fixedAssetCityDistributeUnchecked">
+    <bpmndi:BPMNPlane bpmnElement="fixedAssetCityDistributeUnchecked" id="BPMNPlane_fixedAssetCityDistributeUnchecked">
+      <bpmndi:BPMNShape bpmnElement="create" id="BPMNShape_create">
+        <omgdc:Bounds height="35.0" width="35.0" x="80.0" y="364.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="stationManagerApprove" id="BPMNShape_stationManagerApprove">
+        <omgdc:Bounds height="71.0" width="105.0" x="182.0" y="346.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="stationManagerApproveResult" id="BPMNShape_stationManagerApproveResult">
+        <omgdc:Bounds height="40.0" width="40.0" x="332.0" y="362.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessPass" id="BPMNShape_onProcessPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="737.0" y="356.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="onProcessNotPass" id="BPMNShape_onProcessNotPass">
+        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="189.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="335.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="887.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="115.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="182.0" y="381.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="287.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="332.0" y="382.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="352.0" y="362.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="244.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="352.0" y="189.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="125.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="842.0" y="383.0"></omgdi:waypoint>
+        <omgdi:waypoint x="887.0" y="383.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="372.0" y="382.0"></omgdi:waypoint>
+        <omgdi:waypoint x="737.0" y="383.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
